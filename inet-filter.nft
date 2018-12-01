@@ -1,0 +1,21 @@
+#!/usr/sbin/nft -f
+flush ruleset
+
+table inet filter {
+	chain input	{ 
+        type filter hook input priority 0; policy drop;
+        ct state invalid drop
+        iif lo accept
+		ip protocol icmp icmp type echo-request limit rate over 10/second burst 4 packets  drop
+		ip6 nexthdr icmpv6 icmpv6 type echo-request limit rate over 10/second burst 4 packets drop
+        ct state established, related accept
+        udp dport 53 accept
+        counter drop 
+        }
+
+	chain forward		{ type filter hook forward priority 0; policy drop;}
+	chain output		{ type filter hook output priority 0; policy drop;
+        ct state established, related accept
+        ct state new counter accept
+        }
+}
