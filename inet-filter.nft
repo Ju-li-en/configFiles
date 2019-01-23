@@ -19,3 +19,12 @@ table inet filter {
         ct state new counter accept
         }
 }
+table ip nat {
+	chain prerouting {
+		type nat hook prerouting priority 0; policy accept;
+	}
+
+	chain postrouting {
+		type nat hook postrouting priority 100; policy accept;
+	}
+}
